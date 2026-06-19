@@ -89,7 +89,7 @@
                 <!-- MULTIPLAYER CONTROLLER -->
                 <div class="bg-gray-950 p-2 rounded-lg border border-gray-800 flex justify-between items-center text-[10px]">
                     <div class="flex gap-1 items-center">
-                        <button id="btn-host" class="bg-amber-950 border border-amber-800 text-amber-200 px-2 py-1 rounded font-bold hover:bg-amber-900 transition">Host ห้อง (DM)</button>
+                        <button id="btn-host" onclick="initializeRoom()" class="bg-amber-950 border border-amber-800 text-amber-200 px-2 py-1 rounded font-bold hover:bg-amber-900 transition">Host ห้อง (DM)</button>
                         <input type="text" id="input-room-id" placeholder="รหัสห้อง" class="w-16 bg-black border border-gray-800 text-white font-mono text-center rounded px-1 py-0.5" />
                         <button id="btn-join" class="bg-blue-600 text-white px-2 py-1 rounded font-bold hover:bg-blue-700 transition">จอย</button>
                     </div>
@@ -384,6 +384,32 @@
     </main>
 
     <script>
+// --- ระบบจัดการห้อง (Room Management) ---
+window.initializeRoom = function() {
+    // 1. สร้างรหัสห้องแบบสุ่ม 6 ตัวอักษร
+    const newRoomID = Math.random().toString(36).substring(2, 8).toUpperCase();
+    activeRoomId = newRoomID;
+    isHost = true;
+
+    // 2. อัปเดต UI ให้แสดงผลรหัสห้องที่สร้างขึ้น
+    document.getElementById('share-room-id').innerText = activeRoomId;
+    document.getElementById('input-room-id').value = activeRoomId;
+    
+    // 3. ปลดล็อกปุ่มแชร์และแสดงส่วนควบคุมของ DM
+    document.getElementById('btn-share-room').classList.remove('hidden');
+    document.getElementById('dm-encounter-panel').classList.remove('hidden');
+    
+    // 4. เปลี่ยนสถานะการเชื่อมต่อบนหน้าจอ
+    document.getElementById('status-text').innerText = `Host: ${activeRoomId}`;
+    document.getElementById('status-dot').className = "w-1.5 h-1.5 rounded-full bg-green-500";
+    
+    // 5. ล็อกปุ่ม Host ไม่ให้กดซ้ำ
+    const btnHost = document.getElementById('btn-host');
+    btnHost.disabled = true;
+    btnHost.classList.add('opacity-50', 'cursor-not-allowed');
+    
+    showNotification("สร้างห้องสำเร็จ", `ห้อง ${activeRoomId} พร้อมใช้งาน คุณคือ DM!`);
+};
         // GAME STATE VARIABLES
         let activeRoomId = "";
         let unsubscribeRoom = null;
